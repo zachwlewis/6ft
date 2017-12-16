@@ -34,6 +34,7 @@ Be sure to explain any assumptions your design makes using code comments.
   - A2.1 Given a UUID, an object can be created.
   - A2.2 Given an object, a UUID can be derived.
   - A2.3 UUIDs and objects can be used interchangably.
+  - A2.4 A UUID exists for every player character.
 - A3.0 There exists a robust event system.
   - A3.1 Events provide an event type (`ENEMY_KILLED`, `ITEM_COLLECTED`, `VOLUME_ENTERED`, _et cetera_).
   - A3.2 Events provide a value referencing a game object (`Enraged_Panther`, `Refined_Ore`, `Enemy_Base_Entrance`, _et cetera_).
@@ -48,13 +49,36 @@ Be sure to explain any assumptions your design makes using code comments.
 
 ### Design Approach
 
-![Class Diagram](out/quest-system-class-diagram/quest-system-class-diagram.svg)
+#### Class Diagram
 
-![State Diagram](out/quest-system-event-diagram/quest-system-event-diagram.svg)
+![Class Diagram](out/quest-system-class-diagram/quest-system-class-diagram.svg) [View as PNG](out/quest-system-class-diagram/quest-system-class-diagram.png)
 
-When a quest is available, it will appear in-game for the Player.
+#### State Diagram
 
-### Database
+![State Diagram](out/quest-system-event-diagram/quest-system-event-diagram.svg) [View as PNG](out/quest-system-event-diagram/quest-system-event-diagram.png)
+
+#### Accepting Quests
+
+When a quest is available, it will appear in-game for the Player. When a player accepts the quest, it will transition to `ACCEPTED`, and each of the quest objectives will begin to listen for their assigned game events.
+
+#### Completing Objectives & Quests
+
+Whenever a `QuestObjective` recieves a matching game event, it will increment `currentValue`. If `currentValue` matches or exceeds `goalValue`, it will alert its associated quest by calling `parent.onObjectiveComplete()`.
+
+Whenever `onObjectiveComplete()` is called, the `Quest` it will check `isComplete()` for each objective in `objectives`. If all objectives are complete, it will dispatch a game event to notify all quests that it has been completed, and transition to `COMPLETE`.
+
+#### Becoming Available
+
+When `onPrerequsiteComplete()` is triggered from a quest completion event, the quest will check `isComplete()` for each `Quest` in `prerequsites`. If they are all complete and if `isAvailable`, the quest will transition to `AVAILABLE`.
+
+
+#### Becoming Unavailable
+
+When connecting to the server, the player will query the database. Any quest where `!isAvailable` will be transitioned to `UNAVAILABLE` unless `COMPLETE`.
+
+### Global Database
+
+The global database provides all information regarding the global values of the game. It does not contain player information.
 
 #### Quests
 
@@ -85,10 +109,44 @@ When a quest is available, it will appear in-game for the Player.
 |Key|Type|Column|Relation|
 |---|----|------|--------|
 |PK|UUID|questObjectiveId||
-|FK1|UUID|quest|`Quests.questId`|
+|FK1|UUID|parent|`Quests.questId`|
 ||VARCHAR|description||
 |FK2|UUID|type|`EventType.eventTypeId` (_from **A3.1**_)|
 |FK3|UUID|value|`GameObject.gameObjectId` (_from **A2.0**_)|
 ||INTEGER|goal||
 
+#### QuestStates
+
+`QuestStates` provides all possible states a quest could be in.
+
+|Key|Type|Column|Relation|
+|---|----|------|--------|
+|PK|UUID|questStateId||
+||VARCHAR|name||
+
+### Character Database
+
+The character database provides individual player character progression information.
+
+### CharacterQuests
+
+`CharacterQuests` relates individual progression from characters to quests.
+
+|Key|Type|Column|Relation|
+|---|----|------|--------|
+|PK|UUID|characterQuestId||
+|FK1|UUID|character|`Characters.characterId` (_from **A2.4**_)|
+|FK2|UUID|quest|`Quests.questId`|
+|FK3|UUID|state|`QuestState.questStateId`|
+
+### CharacterObjectives
+
+`CharacterObjectives` relates individual progression from characters to objectives.
+
+|Key|Type|Column|Relation|
+|---|----|------|--------|
+|PK|UUID|characterObjectiveId||
+|FK1|UUID|character|`Characters.characterId` (_from **A2.4**_)|
+|FK2|UUID|objective|`QuestObjectives.questObjectiveId`|
+||INTEGER|value||
 

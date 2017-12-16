@@ -17,12 +17,14 @@ class Quest {
     - objectives: QuestObjective[1..n]
     - rewards: Loot[0..n]
     - prerequsites: Quest[0..n]
+    - isActive: Boolean
     --
     .. Getters ..
     + String getName()
     + String getDescription()
     + bool getState()
     + bool isComplete()
+    + bool getIsActive()
     .. UI Helpers ..
     + String[] getObjectiveDisplayText()
     + String[] getRewardsDisplayText()
