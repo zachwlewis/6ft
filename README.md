@@ -26,6 +26,33 @@ Be sure to explain any assumptions your design makes using code comments.
 
 ### Assumptions
 
+- 1.0 The quest system is for a MMORPG.
+  - 1.1 Quests can be added to the game.
+  - 1.2 Quests can be gobally disabled (such as holiday or event-related quests).
+  - 1.3 Quests can only be updated while the game servers are in maintance mode.
+- 2.0 All objects in game can have a UUID.
+  - 2.1 Given a UUID, an object can be created.
+  - 2.2 Given an object, a UUID can be derived.
+  - 2.3 UUIDs and objects can be used interchangably.
+- 3.0 There exists a robust event system.
+  - 3.1 Events provide an event type (`ENEMY_KILLED`, `ITEM_COLLECTED`, `VOLUME_ENTERED`, _et cetera_).
+  - 3.2 Events provide a value (`Enraged_Panther`, `Refined_Ore`, `Enemy_Base_Entrance`, _et cetera_).
+  - 3.3 The event system provides an interface for recieving events, `IGameEventListener`.
+  - 3.4 The event system provides an interface for sending events, `IGameEventDispatcher`.
+- 4.0 Quest objectives are based on discrete, numerical values, such as:
+  > - __Bless Pirates__ 13/20
+  > - __Taste Pies__ 5/8
+  > - __Complete Programming Test__ 0/1
+- 5.0 There exists a Loot object that can support any possible quest rewards.
+
+### Design Approach
+
+![Class Diagram](out/quest-system-class-diagram/quest-system-class-diagram.svg)
+
+![State Diagram](out/quest-system-event-diagram/quest-system-event-diagram.svg)
+
+When a quest is available, it will appear in-game for the Player.
+
 ### Database
 
 #### Quest

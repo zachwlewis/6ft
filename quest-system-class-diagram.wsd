@@ -1,0 +1,69 @@
+@startuml
+Quest *-- QuestState
+Quest *-- QuestObjective
+Quest -- Loot
+QuestObjective *-- QuestObjectiveTarget
+Quest --|> GameEventListener
+Quest --|> GameEventDispatcher
+QuestObjective --|> GameEventListener
+
+interface GameEventListener
+interface GameEventDispatcher
+
+class Quest {
+    - name: String
+    - description: String
+    - state: QuestState
+    - objectives: QuestObjective[1..n]
+    - rewards: Loot[0..n]
+    - prerequsites: Quest[0..n]
+    --
+    .. Getters ..
+    + String getName()
+    + String getDescription()
+    + bool getState()
+    + bool isComplete()
+    .. UI Helpers ..
+    + String[] getObjectiveDisplayText()
+    + String[] getRewardsDisplayText()
+    .. Events ..
+    - onPrerequsiteComplete(GameEvent)
+    ..
+    - onObjectiveComplete(QuestObjective)
+}
+
+class QuestObjective {
+    - description: String
+    - target: QuestObjectiveTarget
+    - currentValue: uint
+    - goalValue: uint
+    - parent: Quest
+    --
+    .. Getters ..
+    + bool isComplete()
+    + String getDescription()
+    + uint getProgress()
+    + uint getGoal()
+    .. Events ..
+    - onTarget(GameEvent)
+}
+
+enum QuestState <<enum>> {
+    UNAVAILABLE
+    AVAILABLE  
+    OBTAINED   
+    IN_PROGRESS
+    COMPLETED 
+}
+
+class QuestObjectiveTarget <<dataType>> {
+    eventType: String
+    eventValue: String
+}
+
+hide QuestObjectiveTarget circle
+hide interface methods
+hide interface fields
+hide Loot methods
+hide Loot fields
+@enduml

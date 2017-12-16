@@ -1,0 +1,31 @@
+@startuml
+state Unavailable
+state Available
+state Obtained
+state InProgress
+state Complete
+
+Unavailable --> Available : Quest ACTIVE in database.\nAll prerequsite quests COMPLETE.
+Available --> Obtained : User accepts Quest
+Obtained --> InProgress : QuestObjective has\nnon-zero progress
+InProgress --> Complete : All QuestObjectives complete
+
+Available --> Unavailable : Quest INACTIVE\nin database.
+Obtained --> Unavailable : Quest INACTIVE\nin database.
+InProgress --> Unavailable : Quest INACTIVE\nin database.
+
+Unavailable : The quest is not shown to the
+Unavailable : user, and cannot be accepted.
+
+Available : The quest is shown to the
+Available : user and can be accepted.
+
+Obtained : The quest has been accepted, but
+Obtained : no objectives have been started.
+
+InProgress : The quest has been accepted, and
+InProgress : some objectives have been started.
+
+Complete : All objectives have
+Complete : been completed.
+@enduml
