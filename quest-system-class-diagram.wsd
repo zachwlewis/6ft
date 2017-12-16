@@ -2,6 +2,7 @@
 Quest *-- QuestState
 Quest *-- QuestObjective
 Quest -- Loot
+Quest -- Achievement
 QuestObjective *-- QuestObjectiveTarget
 Quest --|> GameEventListener
 Quest --|> GameEventDispatcher
@@ -69,4 +70,8 @@ hide interface methods
 hide interface fields
 hide Loot methods
 hide Loot fields
+hide Achievement methods
+hide Achievement fields
+hide QuestState methods
+hide QuestObjectiveTarget methods
 @enduml

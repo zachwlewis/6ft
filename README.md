@@ -65,7 +65,7 @@ When a quest is available, it will appear in-game for the Player. When a player 
 
 Whenever a `QuestObjective` recieves a matching game event, it will increment `currentValue`. If `currentValue` matches or exceeds `goalValue`, it will alert its associated quest by calling `parent.onObjectiveComplete()`.
 
-Whenever `onObjectiveComplete()` is called, the `Quest` it will check `isComplete()` for each objective in `objectives`. If all objectives are complete, it will dispatch a game event to notify all quests that it has been completed, and transition to `COMPLETE`.
+Whenever `onObjectiveComplete()` is called, the `Quest` it will check `isComplete()` for each objective in `objectives`. If all objectives are complete, it will dispatch a game event to notify all quests that it has been completed, update each achievement in `achievements` and transition to `COMPLETE`.
 
 #### Becoming Available
 
@@ -123,6 +123,16 @@ The global database provides all information regarding the global values of the 
 |---|----|------|--------|
 |PK|UUID|questStateId||
 ||VARCHAR|name||
+
+#### QuestAchievements
+
+`QuestAchievements` provides mapping between quests and achievements.
+
+|Key|Type|Column|Relation|
+|---|----|------|--------|
+|PK |UUID|questAchievementId||
+|FK1|UUID|quest|`Quests.questId`|
+|FK2|UUID|achievement|`Achievement.achievementId` (_from Requirements_)|
 
 ### Character Database
 
